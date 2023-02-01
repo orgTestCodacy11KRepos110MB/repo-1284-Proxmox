@@ -44,8 +44,8 @@ function msg_error() {
 }
 
 msg_info "Setting up Container OS"
-sed -i "s/^#\($LANG\)/\1/" /etc/locale.gen
-locale-gen &> /dev/null
+sed -i "/$LANG/ s/\(^# \)//" /etc/locale.gen
+locale-gen >/dev/null
 while [ "$(hostname -I)" = "" ]; do
   echo 1>&2 -en "${CROSS}${RD} No Network! "
   sleep $RETRY_EVERY
