@@ -58,25 +58,23 @@ done
 msg_ok "Set up Container OS"
 msg_ok "Network Connected: ${BL}$(hostname -I)"
 
-set +e
-alias die=''
-if nc -zw1 8.8.8.8 443; then msg_ok "Internet Connected"; else
+if ping -c 1 8.8.8.8 > /dev/null 2>&1; then
+  msg_ok "Internet Connected"
+else
   msg_error "Internet NOT Connected"
-    read -r -p "Would you like to continue anyway? <y/N> " prompt
-    if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]; then
-      echo -e " ⚠️  ${RD}Expect Issues Without Internet${CL}"
-    else
-      echo -e " 🖧  Check Network Settings"
-      exit 1
-    fi
+  read -r -p "Would you like to continue anyway? <y/N> " prompt
+  if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]; then
+    echo -e " ⚠️  ${RD}Expect Issues Without Internet${CL}"
+  else
+    echo -e " 🖧  Check Network Settings"
+    exit 1
+  fi
 fi
 if getent ahosts "github.com" >/dev/null 2>&1; then
   msg_ok "DNS Resolved github.com"
 else
   msg_error "DNS Lookup Failure"
 fi
-alias die='EXIT=$? LINE=$LINENO error_exit'
-set -e
 
 msg_info "Updating Container OS"
 $STD apt-get update
