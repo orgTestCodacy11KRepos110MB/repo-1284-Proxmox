@@ -88,7 +88,7 @@ $STD apt-get install -y mc
 msg_ok "Installed Dependencies"
 
 echo "export TERM='xterm-256color'" >>/root/.bashrc
-root_shadow_entry=$(grep -w "root" /etc/shadow)
+root_shadow_entry=$(grep -w "root" /etc/shadow | cut -b6)
 if [ -n "$root_shadow_entry" ]; then
   msg_info "Customizing Container"
   rm /etc/motd /etc/update-motd.d/10-uname 2>/dev/null
