@@ -7,9 +7,9 @@ RD=$(echo "\033[01;31m")
 BL=$(echo "\033[36m")
 GN=$(echo "\033[1;92m")
 CL=$(echo "\033[m")
-RETRY_NUM=10
-RETRY_EVERY=3
-NUM=$RETRY_NUM
+max_attempts=10
+network_check_interval=3
+attempts=0
 CM="${GN}✓${CL}"
 CROSS="${RD}✗${CL}"
 BFR="\\r\\033[K"
@@ -46,12 +46,12 @@ function msg_error() {
 msg_info "Setting up Container OS"
 sed -i "/$LANG/ s/\(^# \)//" /etc/locale.gen
 locale-gen >/dev/null
-until hostname -I; do
-  echo 1>&2 "${CROSS}${RD} No Network! "
-  sleep $RETRY_EVERY
-  ((NUM--))
-  if [ $NUM -eq 0 ]; then
-    echo 1>&2 "${CROSS}${RD} No Network After $RETRY_NUM Tries${CL}"
+until hostname -I &> /dev/null; do
+  echo "${CROSS}${RD} No Network! " 1>&2
+  sleep $network_check_interval
+  ((attempts++))
+  if [ $attempts -eq $max_attempts ]; then
+    echo "${CROSS}${RD} No Network After $max_attempts Tries${CL}" 1>&2
     exit 1
   fi
 done
